@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedVoice - голосовое заполнение медицинской документации</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- ЭКРАН ВЫБОРА ЯЗЫКА -->
+    <div id="welcomeScreen" class="welcome-screen">
+        <div class="welcome-content">
+            <div class="main-title">🎙️ MedVoice</div>
+            <div class="welcome-subtitle" id="welcomeSubtitle">Выберите язык / Choose language</div>
+            <button class="lang-btn" data-lang="ru">Русский</button>
+            <button class="lang-btn" data-lang="en">English</button>
+        </div>
+    </div>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <div id="mainContent" class="hidden">
+        <!-- НАВИГАЦИЯ -->
+        <nav class="navbar navbar-expand-lg nav-gradient">
+            <div class="container">
+                <a class="navbar-brand text-white" href="#">
+                    <i class="fas fa-microphone me-2"></i>MedVoice
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <button id="visionModeBtn" class="btn vision-toggle-btn">
+                                <i class="fas fa-eye"></i> <span id="visionBtnText">Версия для слабовидящих</span>
+                            </button>
+                        </li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#service">Сервис</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#about">О сервисе</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#howto">Как пользоваться</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- КНОПКА НАВЕРХ -->
+        <button id="backToTop" class="back-to-top" title="Наверх"><i class="fas fa-arrow-up"></i></button>
+
+        <!-- ОСНОВНОЙ КОНТЕНТ -->
+        <div class="content">
+            <!-- СЕКЦИЯ: СЕРВИС (ГОЛОСОВОЙ ДИКТОФОН) -->
+            <section id="service" class="section-service">
+                <div class="container py-5">
+                    <div class="card shadow-lg">
+                        <div class="card-header bg-primary text-white">
+                            <h4><i class="fas fa-microphone-alt me-2"></i><span id="serviceTitle">Голосовой
+                                    диктофон</span></h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-7">
+                                    <label class="form-label" id="docTextLabel">Текст документа</label>
+                                    <textarea class="form-control" id="voiceText" rows="8"
+                                        placeholder="Нажмите 'Начать запись' и говорите..."></textarea>
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label" id="templateLabel">Шаблон документа</label>
+                                    <select class="form-select" id="templateSelect">
+                                        <option value="">-- Выберите шаблон --</option>
+                                        <option value="empty">📄 Пустой шаблон</option>
+                                        <option value="priem">🩺 Первичный прием</option>
+                                        <option value="recipe">💊 Рецепт</option>
+                                        <option value="napravlenie">📋 Направление</option>
+                                    </select>
+
+                                    <label class="form-label mt-3" id="recordControlLabel">Управление записью</label>
+                                    <button id="startBtn" class="btn btn-start btn-lg-custom">
+                                        <i class="fas fa-microphone me-2"></i><span id="startBtnText">Начать
+                                            запись</span>
+                                    </button>
+                                    <button id="stopBtn" class="btn btn-stop btn-lg-custom" disabled>
+                                        <i class="fas fa-stop me-2"></i><span id="stopBtnText">Остановить</span>
+                                    </button>
+                                    <button id="saveBtn" class="btn btn-save btn-lg-custom">
+                                        <i class="fas fa-file-medical me-2"></i><span id="saveBtnText">Сформировать
+                                            документ</span>
+                                    </button>
+                                    <button id="newDocBtn" class="btn btn-secondary btn-lg-custom">
+                                        <i class="fas fa-file me-2"></i><span id="newDocBtnText">Новый документ</span>
+                                    </button>
+
+                                    <div class="card mt-3">
+                                        <div class="card-body">
+                                            <h6><i class="fas fa-cog me-2"></i><span id="settingsTitle">Настройки</span>
+                                            </h6>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="autoSave">
+                                                <label class="form-check-label" id="autoSaveLabel">Автоматически
+                                                    сохранять введенный текст</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- СЕКЦИЯ: О СЕРВИСЕ -->
+            <section id="about" class="py-5 bg-light">
+                <div class="container">
+                    <div class="text-center mb-5">
+                        <h1>🎙️ MedVoice</h1>
+                        <p class="lead" id="aboutLead">Голосовое заполнение медицинской документации</p>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card h-100 text-center p-4">
+                                <div class="display-1">🎯</div>
+                                <h3 id="goalTitle">Цель сервиса</h3>
+                                <p id="goalDesc">Сократить время сотрудника на заполнение документации</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100 text-center p-4">
+                                <div class="display-1">⚡</div>
+                                <h3 id="advTitle">Преимущества</h3>
+                                <p id="advDesc">Экономия времени, готовые шаблоны, работает в браузере</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100 text-center p-4">
+                                <div class="display-1">🔒</div>
+                                <h3 id="securityTitle">Безопасность</h3>
+                                <p id="securityDesc">Данные хранятся локально, не передаются на сервер</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- СЕКЦИЯ: КАК ПОЛЬЗОВАТЬСЯ -->
+            <section id="howto" class="py-5">
+                <div class="container">
+                    <h2 class="text-center mb-5" id="howtoTitle">Как пользоваться сервисом</h2>
+                    <div class="row">
+                        <div class="col-lg-8 mx-auto">
+                            <div class="list-group" id="stepsList">
+                                <div class="list-group-item p-3">
+                                    <h4>Шаг 1:</h4>
+                                    <p>Разрешите доступ к микрофону в браузере</p>
+                                </div>
+                                <div class="list-group-item p-3">
+                                    <h4>Шаг 2:</h4>
+                                    <p>Выберите шаблон документа (по желанию)</p>
+                                </div>
+                                <div class="list-group-item p-3">
+                                    <h4>Шаг 3:</h4>
+                                    <p>Нажмите "Начать запись" и говорите четко</p>
+                                </div>
+                                <div class="list-group-item p-3">
+                                    <h4>Шаг 4:</h4>
+                                    <p>Нажмите "Остановить" когда закончите</p>
+                                </div>
+                                <div class="list-group-item p-3">
+                                    <h4>Шаг 5:</h4>
+                                    <p>Нажмите "Сформировать документ"</p>
+                                </div>
+                                <div class="list-group-item p-3">
+                                    <h4>Шаг 6*:</h4>
+                                    <p>Для печати: ПК - Ctrl+P, Телефон - ⋮ (меню) → "Печать"</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ФУТЕР -->
+        <footer class="bg-dark text-white text-center py-4">
+            <p id="footerText">MedVoice — дипломный проект</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/templates.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/speech.js"></script>
+    <script src="js/print.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
