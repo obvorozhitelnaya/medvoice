@@ -30,10 +30,12 @@ function initSpeechRecognition(textarea, startBtn, stopBtn) {
     startBtnElement = startBtn;
     stopBtnElement = stopBtn;
 
-    // Следим за позицией курсора
+    // Следим за позицией курсора (добавлены события для мобильных устройств)
     textOutputElement.addEventListener('click', updateCursorPosition);
     textOutputElement.addEventListener('keyup', updateCursorPosition);
     textOutputElement.addEventListener('select', updateCursorPosition);
+    textOutputElement.addEventListener('touchstart', updateCursorPosition);
+    textOutputElement.addEventListener('focus', updateCursorPosition);
 
     // Создаем экземпляр распознавания
     createRecognition();
@@ -46,6 +48,7 @@ function initSpeechRecognition(textarea, startBtn, stopBtn) {
 function updateCursorPosition() {
     if (textOutputElement) {
         currentCursorPosition = textOutputElement.selectionStart;
+        console.log('Позиция курсора обновлена:', currentCursorPosition);
     }
 }
 
@@ -151,13 +154,20 @@ function setupRecognitionHandlers() {
 function insertTextAtCursor(text) {
     if (!textOutputElement) return;
 
+    // Сохраняем позицию курсора (если она не была сохранена)
+    if (currentCursorPosition === undefined || currentCursorPosition === 0) {
+        currentCursorPosition = textOutputElement.value.length;
+    }
+
     const currentText = textOutputElement.value;
     const start = currentCursorPosition;
 
     textOutputElement.value = currentText.substring(0, start) + text + currentText.substring(start);
     currentCursorPosition = start + text.length;
-    textOutputElement.setSelectionRange(currentCursorPosition, currentCursorPosition);
+
+    // Принудительно устанавливаем фокус и позицию курсора (важно для мобильных)
     textOutputElement.focus();
+    textOutputElement.setSelectionRange(currentCursorPosition, currentCursorPosition);
 
     // Триггерим событие input для автосохранения
     const inputEvent = new Event('input', { bubbles: true });
@@ -191,7 +201,6 @@ function updateRecognitionLanguage() {
 function startSpeechRecognition() {
     if (!recognition) {
         console.error('Распознавание речи не инициализировано');
-        // Пробуем пересоздать
         if (textOutputElement && startBtnElement && stopBtnElement) {
             initSpeechRecognition(textOutputElement, startBtnElement, stopBtnElement);
         }
@@ -201,35 +210,40 @@ function startSpeechRecognition() {
         }
     }
 
-    try {
-        // Запрашиваем разрешение на микрофон
-        navigator.mediaDevices.getUserMedia({ audio: true })
-            .then(() => {
-                recognition.start();
-                if (startBtnElement) startBtnElement.disabled = true;
-                if (stopBtnElement) stopBtnElement.disabled = false;
-            })
-            .catch(err => {
-                console.error('Ошибка доступа к микрофону:', err);
-                const lang = loadLanguage();
-                alert(lang === 'en'
-                    ? 'Cannot access microphone. Please check your permissions.'
-                    : 'Не удалось получить доступ к микрофону. Пожалуйста, проверьте разрешения.');
-            });
-    } catch (e) {
-        console.error('Ошибка при запуске распознавания:', e);
-        // Если уже запущено, пробуем пересоздать
-        createRecognition();
-        if (recognition) {
+    // Сохраняем текущую позицию курсора ПЕРЕД запросом микрофона
+    updateCursorPosition();
+
+    // Небольшая задержка для мобильных устройств
+    setTimeout(() => {
+        // Проверяем, мобильное ли устройство
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+        if (isMobile) {
+            // Для мобильных устройств - просто запускаем распознавание
             try {
                 recognition.start();
                 if (startBtnElement) startBtnElement.disabled = true;
                 if (stopBtnElement) stopBtnElement.disabled = false;
-            } catch (err) {
-                console.error('Не удалось запустить распознавание:', err);
+            } catch (e) {
+                console.error('Ошибка запуска на мобильном:', e);
             }
+        } else {
+            // Для ПК - запрашиваем разрешение
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(() => {
+                    recognition.start();
+                    if (startBtnElement) startBtnElement.disabled = true;
+                    if (stopBtnElement) stopBtnElement.disabled = false;
+                })
+                .catch(err => {
+                    console.error('Ошибка доступа к микрофону:', err);
+                    const lang = loadLanguage();
+                    alert(lang === 'en'
+                        ? 'Cannot access microphone. Please check your permissions.'
+                        : 'Не удалось получить доступ к микрофону. Пожалуйста, проверьте разрешения.');
+                });
         }
-    }
+    }, 100);
 }
 
 /**

@@ -28,14 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
     welcomeScreen.style.opacity = '1';
     mainContent.classList.add('hidden');
 
-    // Очищаем URL от хэша, чтобы не было мелькания
+    // Очищаем URL от хэша
     if (window.location.hash === '#main') {
         history.replaceState({ page: 'welcome' }, '', window.location.pathname);
     }
 
     // ========== ФУНКЦИЯ ПЕРЕХОДА НА ГЛАВНЫЙ ЭКРАН ==========
     function showMainContent(lang) {
-        // Анимация исчезновения экрана приветствия
         welcomeScreen.style.opacity = '0';
         welcomeScreen.style.transition = 'opacity 0.5s ease';
 
@@ -43,17 +42,15 @@ document.addEventListener('DOMContentLoaded', () => {
             welcomeScreen.classList.add('hidden');
             mainContent.classList.remove('hidden');
 
-            // Применяем язык интерфейса
             if (lang) {
                 switchLanguage(lang);
-                // Обновляем язык распознавания речи
                 if (typeof updateRecognitionLanguage === 'function') {
                     updateRecognitionLanguage();
                 }
             }
 
-            // Обновляем URL без хэша, чтобы при обновлении не было скачков
-            history.replaceState({ page: 'main' }, '', window.location.pathname);
+            // Используем pushState для сохранения истории (чтобы кнопка "Назад" работала)
+            history.pushState({ page: 'main' }, '', '#main');
             console.log('Переход на главный экран, язык:', lang);
         }, 500);
     }
@@ -63,12 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
         mainContent.classList.add('hidden');
         welcomeScreen.classList.remove('hidden');
         welcomeScreen.style.opacity = '1';
-        history.replaceState({ page: 'welcome' }, '', window.location.pathname);
+        history.pushState({ page: 'welcome' }, '', '#welcome');
         console.log('Возврат на экран приветствия');
     }
 
-    // ========== ЗАГРУЗКА СОХРАНЕННЫХ НАСТРОЕК (без автоматического перехода) ==========
-    // Просто загружаем значения, но не переходим на главную
+    // ========== ЗАГРУЗКА СОХРАНЕННЫХ НАСТРОЕК ==========
 
     // ========== ВОССТАНОВЛЕНИЕ СОХРАНЕННОГО ДОКУМЕНТА ==========
     const savedDoc = loadDocumentFromStorage();
@@ -188,12 +184,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Если на главном экране - возвращаемся на приветствие
             showWelcomeScreen();
         } else if (isWelcomeVisible) {
-            // Если уже на приветствии, ничего не делаем, но можно добавить логику
+            // Если уже на приветствии, ничего не делаем
             console.log('Уже на экране приветствия');
         }
     });
 
-    // Устанавливаем начальное состояние истории (без хэша)
+    // Устанавливаем начальное состояние истории
     history.replaceState({ page: 'welcome' }, '', window.location.pathname);
 
     // Сохраняем ссылку на функцию showWelcomeScreen для возможного использования
