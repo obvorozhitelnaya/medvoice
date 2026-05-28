@@ -44,7 +44,7 @@ const translations = {
         step6: '<h4>Шаг 6*:</h4><p>Для печати: ПК - Ctrl+P, Телефон - ⋮ (меню) → "Печать"</p>',
 
         // Футер
-        footerText: 'MedVoice — дипломный проект',
+        footerText: 'MedVoice — дипломный проект. Разработчик: Чуралева Ольга',
 
         // Welcome screen
         welcomeSubtitle: 'Выберите язык / Choose language',
